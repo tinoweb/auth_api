@@ -1,8 +1,10 @@
 import express from 'express';
 import User from '../models/Users.js';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import authConfig from '../config/auth.json' assert {type: 'json'}
+import authConfig from '../../config/auth.json' assert {type: 'json'}
+import mailer from '../../modules/mailer.js'
 
 const router = express.Router();
 
@@ -48,6 +50,45 @@ router.post('/authenticate', async (req, resp) => {
     user, 
     token: generateToken({id: user.id})
   })
+})
+
+router.post('/forgotPassword', async (req, res) => {
+  const { email } = req.body
+  try {
+    const user = await User.findOne({ email });
+    if(!user)
+      return res.status(400).send({error:"User not found"})
+
+    const token = crypto.randomBytes(20).toString('hex');
+
+    const now = new Date();
+    now.setHours(now.getHours() + 1)
+
+    await User.findByIdAndUpdate(user.id, {
+      '$set': {
+        passwordResetToken: token,
+        passwordResetExpires: now
+      }
+    })
+
+    console.log(token, now)
+    
+    mailer.sendMail({
+      to: email,
+      from: "tino477@gmail.com",
+      template: 'auth/forgot_password',
+      context: { token }
+    }, (error) => {
+      if(error)
+      console.log('error===>> sendMail==>', error);
+        return res.status(400).send({error:"Cannot send forgot password email"})
+      return res.send()
+    })
+
+  } catch (error) {
+    console.log("error", error)
+    res.status(400).send({error: "Error on forgot password"})
+  }
 })
 
 export default app => app.use('/auth', router)
