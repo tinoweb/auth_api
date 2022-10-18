@@ -23,7 +23,7 @@ const OrderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-})
+},{collection: 'order'})
 
 const model = new mongoose.model("OrderSchema", OrderSchema)
 

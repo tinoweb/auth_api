@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv'
 import authController from './app/controllers/authController.js'
 import orderController from './app/controllers/orderController.js';
 import productController from './app/controllers/productController.js';
+import authAdminController from './app/controllers/authAdminController.js';
 // import Users from './app/models/Users.js'
 // import usersRoutes from './routes/users.js'
 
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}))
 
 authController(app);
+authAdminController(app);
 productController(app);
 orderController(app);
 
