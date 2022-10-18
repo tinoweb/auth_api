@@ -19,10 +19,9 @@ router.post('/register', async (req, res) => {
   try {
     if(await User.findOne({email}))
       return res.status(400).send({error: "User already exists"});
-      const user = await User.create(req.body)
 
+      const user = await User.create(req.body)
       user.password = undefined
-      
       return res.send({
         user,
         token: generateToken({id: user.id})
@@ -60,7 +59,6 @@ router.post('/forgotPassword', async (req, res) => {
       return res.status(400).send({error:"User not found"})
 
     const token = crypto.randomBytes(20).toString('hex');
-
     const now = new Date();
     now.setHours(now.getHours() + 1)
 
@@ -79,15 +77,46 @@ router.post('/forgotPassword', async (req, res) => {
       template: 'auth/forgot_password',
       context: { token }
     }, (error) => {
-      if(error)
-      console.log('error===>> sendMail==>', error);
+      if(error){
         return res.status(400).send({error:"Cannot send forgot password email"})
-      return res.send()
+        console.log('error===>> sendMail==>', error);
+      }
+      return res.send("Token enviado para seu email...")
     })
 
   } catch (error) {
     console.log("error", error)
     res.status(400).send({error: "Error on forgot password"})
+  }
+})
+
+router.post('/resetPassword', async (req, res) => {
+  const { email, password,token } = req.body
+
+  try {
+    const user = await User.findOne({ email })
+      .select('+passwordResetToken passwordResetExpires')
+
+    if(!user)
+      return res.status(400).send({ error: 'User not found' })
+    
+    if(token !== user.passwordResetToken)
+      return res.status(400).send({error: 'Invalid token'})
+
+    const now = new Date()
+
+    if(now > user.passwordResetExpires)
+      return res.status(400).send({error: 'token expired, generate new token'})
+
+    user.password = password
+
+    await user.save()
+
+    res.send()
+
+  }catch (error) {
+    console.log({"error": error.message})
+    res.status(400).send({error: "Error cannot reset password"})
   }
 })
 

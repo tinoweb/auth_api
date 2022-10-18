@@ -2,18 +2,43 @@ import mongoose from 'mongoose';
 
 const ProductSchema = new mongoose.Schema(
   {
-    nome: { type:String, required:true },
-    sku: { type:String },
-    utilizacao: String,
-    construcao: String,
-    medida: String,
-    espesura: String,
-    cores: String,
-    norma_aplicavel: String,
-    designacao_norma: String,
-    temperatura_max: String,
-    imagem: String,
-    certificado: String,
+    name: { 
+      type:String, 
+      required:true 
+    },
+    sku: { 
+      type:String 
+    },
+    utilization:{
+      type:String
+    },
+    construction:{
+      type:String
+    }, 
+    measure:{ // medida
+      type:String
+    },
+    thickness: { // espessura
+      type:String
+    },
+    colors: {
+      type:String
+    },
+    applicable_standard: {
+      type:String
+    },
+    designacao_norma:{
+      type:String
+    },
+    standard_designation: {
+      type:String
+    },
+    image: {
+      type:String
+    },
+    certificate: {
+      type:String
+    },
   }, 
   {collection: 'products'}
 )
