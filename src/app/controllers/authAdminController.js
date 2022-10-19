@@ -32,24 +32,51 @@ router.post('/register', async (req, res) => {
   }
 })
 
-// router.post('/authenticate', async (req, resp) => {
-//   const { email, password } = req.body
+router.post('/login', async (req, resp) => {
+  const { email, password } = req.body
   
-//   const user = await User.findOne({ email }).select('+password')
+  const admin = await Admin.findOne({ email }).select('+password')
   
-//   if(!user) 
-//     return resp.status(400).send({error:"User not found"})
+  if(!admin) 
+    return resp.status(400).send({error:"User not found"})
 
-//   if(!await bcrypt.compare(password, user.password))
-//     return resp.status(400).send({error:"Inválid Password"})
+  if(!await bcrypt.compare(password, admin.password))
+    return resp.status(400).send({error:"Inválid Password"})
 
-//   user.password = undefined
+  admin.password = undefined
 
-//   resp.send({
-//     user, 
-//     token: generateToken({id: user.id})
-//   })
-// })
+  resp.send({
+    admin, 
+    token: generateToken({id: admin.id})
+  })
+})
+
+router.get('/me', async (req, res) => {
+  
+  try{
+    const authHeader = req.headers.authorization
+    if(!authHeader)
+      return res.status(401).send({error: 'no token available'})
+    var authorization = req.headers.authorization.split(' ')[1],
+      decoded;
+    try {
+      decoded = jwt.verify(authorization, authConfig.secret);
+      console.log('Decod===>>', decoded);
+    } catch (e) {
+      return res.status(401).send('unauthorized');
+    }
+    var adminId = decoded.id;
+
+    Admin.findOne({_id: adminId}).then(function(user){
+        return res.status(200).send({'Admin':user});
+    });
+      
+  }catch(error){
+    console.log('error===>>', error);
+    return res.status(500).send({'error':error});
+  }
+  
+})
 
 // router.post('/forgotPassword', async (req, res) => {
 //   const { email } = req.body
@@ -120,4 +147,4 @@ router.post('/register', async (req, res) => {
 //   }
 // })
 
-export default app => app.use('/auth-admin', router)
+export default app => app.use('/api/auth-admin', router)

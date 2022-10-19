@@ -120,4 +120,4 @@ router.post('/resetPassword', async (req, res) => {
   }
 })
 
-export default app => app.use('/auth', router)
+export default app => app.use('/api/auth', router)

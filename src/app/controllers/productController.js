@@ -10,4 +10,4 @@ router.get('/', (req, res) => {
 })
 
 
-export default app => app.use('/product', router)
+export default app => app.use('/api/product', router)

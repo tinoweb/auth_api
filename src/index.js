@@ -5,8 +5,6 @@ import authController from './app/controllers/authController.js'
 import orderController from './app/controllers/orderController.js';
 import productController from './app/controllers/productController.js';
 import authAdminController from './app/controllers/authAdminController.js';
-// import Users from './app/models/Users.js'
-// import usersRoutes from './routes/users.js'
 
 const app = express();
 const PORT = 5000;
@@ -19,7 +17,8 @@ authAdminController(app);
 productController(app);
 orderController(app);
 
-// app.use('/users', usersRoutes)
+
+
 app.get('/', (req, res) => { res.send('ampere api welcome!!!') })
 
 app.listen(PORT, () =>console.log(`Sevidor rodando na porta ${PORT}`))
