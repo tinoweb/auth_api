@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from "body-parser";
+import cors from 'cors';
 import * as dotenv from 'dotenv'
 import authController from './app/controllers/authController.js'
 import orderController from './app/controllers/orderController.js';
@@ -11,6 +12,7 @@ const PORT = 5000;
 dotenv.config()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}))
+app.use(cors())
 
 authController(app);
 authAdminController(app);
